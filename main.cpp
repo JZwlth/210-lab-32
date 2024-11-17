@@ -6,54 +6,77 @@
 
 using namespace std;
 
-const int INITIAL_SIZE = 2;
+const int INITIAL_MIN_SIZE = 1;
+const int INITIAL_MAX_SIZE = 3;
+const int NUM_LANES = 4;
+const int SIMULATION_TIME = 20;
+
+const int PROB_PAID = 46;
+const int PROB_JOINED = 39;
+const int PROB_SWITCH = 15;
+
+struct Operation {
+    string type;
+    Car car;
+};
 
 int main() {
-    // Seed the random number generator
     srand(static_cast<unsigned>(time(0)));
-    
-    deque<Car> carQueue;
 
-    for (int i = 0; i < INITIAL_SIZE; i++) {
-        carQueue.push_back(Car());
-    }
+    deque<Car> lanes[NUM_LANES];
 
-    // Display the initial queue
-    cout << "Initial queue:\n";
-    for (auto &car : carQueue) {
-        car.print();
-    }
-    cout << endl;
-
-    int time = 1; 
-
-    while (!carQueue.empty()) {
-        int operation = rand() % 100 + 1;  // Random number between 1 and 100
-        
-        if (operation <= 55) {
-            // 55% chance for the car at the head of the queue to pay and leave
-            cout << "Time: " << time << " Operation: Car paid: ";
-            carQueue.front().print();
-            carQueue.pop_front();
-        } else {
-            // 45% chance for a new car to join the line
-            Car newCar;
-            cout << "Time: " << time << " Operation: Joined lane: ";
-            newCar.print();
-            carQueue.push_back(newCar);
+    // Initialize lanes with 1-3 cars
+    for (int i = 0; i < NUM_LANES; i++) {
+        int num_cars = rand() % (INITIAL_MAX_SIZE - INITIAL_MIN_SIZE + 1) + INITIAL_MIN_SIZE;
+        for (int j = 0; j < num_cars; j++) {
+            lanes[i].push_back(Car());
         }
+    }
 
-        cout << "Queue:\n";
-        if (carQueue.empty()) {
-            cout << "    Empty\n";
+    // Display initial queue
+    cout << "Initial queue:\n";
+    for (int i = 0; i < NUM_LANES; i++) {
+        cout << "Lane " << i + 1 << ":\n";
+        if (lanes[i].empty()) {
+            cout << "    empty\n";
         } else {
-            for (auto &car : carQueue) {
+            for (auto &car : lanes[i]) {
+                cout << "    ";
                 car.print();
             }
         }
-        cout << endl;
+    }
+    cout << endl;
 
-        time++; // Increment time for each cycle
+    for (int time = 1; time <= SIMULATION_TIME; time++) {
+        Operation operations[NUM_LANES];
+        // Initialize operations
+        for (int i = 0; i < NUM_LANES; i++) {
+            operations[i].type = "";
+        }
+
+        // Display operations
+        cout << "Time: " << time << endl;
+        for (int i = 0; i < NUM_LANES; i++) {
+            if (operations[i].type == "Paid" || operations[i].type == "Joined" || operations[i].type == "Switched") {
+                cout << "Lane: " << i + 1 << " " << operations[i].type << ": ";
+                operations[i].car.print();
+            }
+        }
+
+        // Display queues
+        for (int i = 0; i < NUM_LANES; i++) {
+            cout << "Lane " << i + 1 << " Queue:\n";
+            if (lanes[i].empty()) {
+                cout << "    empty\n";
+            } else {
+                for (auto &car : lanes[i]) {
+                    cout << "    ";
+                    car.print();
+                }
+            }
+        }
+        cout << endl;
     }
 
     return 0;

@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/jz/Work/CS210/210-lab-32/main'
-relocations:     []
-...
