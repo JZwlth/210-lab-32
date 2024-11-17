@@ -55,6 +55,49 @@ int main() {
             operations[i].type = "";
         }
 
+        // Process each lane
+        for (int i = 0; i < NUM_LANES; i++) {
+            if (lanes[i].empty()) {
+                int operation = rand() % 100 + 1;
+                if (operation <= 50) {
+                    // New car joins
+                    Car newCar;
+                    lanes[i].push_back(newCar);
+                    operations[i].type = "Joined";
+                    operations[i].car = newCar;
+                } else {
+                    operations[i].type = "No action";
+                }
+            } else {
+                int operation = rand() % 100 + 1;
+                if (operation <= PROB_PAID) {
+                    Car paidCar = lanes[i].front();
+                    lanes[i].pop_front();
+                    operations[i].type = "Paid";
+                    operations[i].car = paidCar;
+                } else if (operation <= PROB_PAID + PROB_JOINED) {
+                    Car newCar;
+                    lanes[i].push_back(newCar);
+                    operations[i].type = "Joined";
+                    operations[i].car = newCar;
+                } else {
+                    Car switchCar = lanes[i].back();
+                    lanes[i].pop_back();
+
+                    // Choose a random lane that's not the original lane
+                    int newLane;
+                    do {
+                        newLane = rand() % NUM_LANES;
+                    } while (newLane == i);
+
+                    lanes[newLane].push_back(switchCar);
+
+                    operations[i].type = "Switched";
+                    operations[i].car = switchCar;
+                }
+            }
+        }
+
         // Display operations
         cout << "Time: " << time << endl;
         for (int i = 0; i < NUM_LANES; i++) {
